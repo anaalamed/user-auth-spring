@@ -18,20 +18,38 @@ public class AuthService {
     static HashMap<String, String> mapUserTokens = new HashMap<>();
 
     public User add(UserRequest userRequest) {
-        User user = new User(userRequest.getEmail(), userRequest.getName(), userRequest.getPassword());
-        return userRepository.add(user);
+        try {
+            User userExist = UserRepository.getUserByEmail(userRequest.getEmail());
+
+            if (userExist != null) {
+                throw new IllegalArgumentException("The user already exists");
+            }
+
+            User user = new User(userRequest.getEmail(), userRequest.getName(), userRequest.getPassword());
+            return userRepository.add(user);
+        } catch (RuntimeException ex) {
+            throw new NullPointerException("the user wasn't added");
+        }
+
     }
 
     public String login(UserRequest userRequest) {
         User userByEmail = userRepository.getUserByEmail(userRequest.getEmail());
-        System.out.println(userByEmail);
 
         if (userByEmail.getPassword().equals(userRequest.getPassword())) {
             String token = generateUniqueToken();
             mapUserTokens.put(token, String.valueOf(userByEmail.getId()));
             return token;
-
         }
-        return null;
+        throw new IllegalArgumentException("login failed");
+    }
+
+    public static Integer getUserId(String token)  {
+        String id = mapUserTokens.get(token);
+
+        if (id == null) {
+            throw new NullPointerException();
+        }
+        return Integer.valueOf(id);
     }
 }

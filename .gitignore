@@ -10,4 +10,4 @@
 log/
 target/
 
-#src/main/java/server/repo/
+src/main/java/auth_spring/repository/repo
