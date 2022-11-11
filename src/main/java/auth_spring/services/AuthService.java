@@ -1,6 +1,7 @@
 package auth_spring.services;
 
 import auth_spring.controllers.requests.UserRequest;
+import auth_spring.controllers.responses.TokenResponse;
 import auth_spring.model.User;
 import auth_spring.repository.UserRepository;
 
@@ -37,7 +38,7 @@ public class AuthService {
         return userRepository.add(user);
     }
 
-    public String login(UserRequest userRequest) {
+    public TokenResponse login(UserRequest userRequest) {
         User userByEmail = userRepository.getUserByEmail(userRequest.getEmail());
 
         if (userByEmail == null) {
@@ -47,7 +48,8 @@ public class AuthService {
         if (userByEmail.getPassword().equals(userRequest.getPassword())) {
             String token = generateUniqueToken();
             mapUserTokens.put(token, String.valueOf(userByEmail.getId()));
-            return token;
+//            return token;
+            return new TokenResponse(token, userByEmail);
         } else {
             logger.error("password doesn't match");
             throw new IllegalArgumentException("password doesn't match");

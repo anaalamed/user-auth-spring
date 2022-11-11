@@ -1,13 +1,17 @@
 package auth_spring.controllers.responses;
 
+import auth_spring.model.User;
+
 public class TokenResponse {
     private String token;
+    private User user;
 
 
     public TokenResponse() {}
 
-    public TokenResponse(String token) {
+    public TokenResponse(String token, User user) {
         this.token = token;
+        this.user = user;
     }
 
     public String getToken() {
@@ -16,5 +20,13 @@ public class TokenResponse {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

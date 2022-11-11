@@ -57,7 +57,7 @@ public class AuthController {
                 return ResponseEntity.badRequest().body(new ErrorMessageResponse("input fields are not valid, login failed"));
             }
 
-            return ResponseEntity.ok(new TokenResponse(authService.login(userRequest)));
+            return ResponseEntity.ok((authService.login(userRequest)));
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.badRequest().body(new ErrorMessageResponse(ex.getMessage()));        // password doesn't match
         } catch (NullPointerException ex) {
