@@ -1,7 +1,8 @@
 package auth_spring.repository;
 import auth_spring.model.User;
 import auth_spring.utils.Files;
-import com.google.gson.Gson;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
 
 import java.io.File;
@@ -15,6 +16,9 @@ import java.util.Map;
 public class UserRepository  {
     private static Map<Integer, User> users = new HashMap<>();     // cache
     private static final String BASE_ROUTE = "src/main/java/auth_spring/repository/repo";
+
+    private static Logger logger = LogManager.getLogger(UserRepository.class.getName());
+
 
 
     public UserRepository() {
@@ -44,17 +48,17 @@ public class UserRepository  {
     }
 
     public User add(User user) {
-            String filename = BASE_ROUTE + "/" + user.getId() + ".json";
-            User userAdded = Files.add(filename, user);
-            users.put(userAdded.getId(), userAdded);
-            return userAdded;
+        String filename = BASE_ROUTE + "/" + user.getId() + ".json";
+        User userAdded = Files.add(filename, user);
+        users.put(userAdded.getId(), userAdded);
+        return userAdded;
     }
 
     public User updateUser(User user) {
-            String filename = BASE_ROUTE + "/" + user.getId() + ".json";
-            User userUpdated = Files.add(filename, user);
-            users.put(userUpdated.getId(), userUpdated);
-            return userUpdated;
+        String filename = BASE_ROUTE + "/" + user.getId() + ".json";
+        User userUpdated = Files.add(filename, user);
+        users.put(userUpdated.getId(), userUpdated);
+        return userUpdated;
     }
 
     public void removeUserFromDb(int id) {
@@ -64,6 +68,7 @@ public class UserRepository  {
     }
 
     private static Map<Integer, User> cacheUsersFilesFromRepo() {
+        logger.info("cacheUsersFilesFromRepo");
         File folder = new File(BASE_ROUTE);
         File[] listOfFiles = folder.listFiles();
 

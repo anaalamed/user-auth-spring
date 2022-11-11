@@ -33,7 +33,7 @@ public class UserController {
         return ResponseEntity.ok(userService.getUsers());
     }
 
-    @RequestMapping(method = RequestMethod.PATCH, path = "/update")
+    @RequestMapping(method = RequestMethod.PATCH, path = "/update/name")
     public ResponseEntity updateName(@RequestHeader String token, @RequestBody UserRequest userRequest) {
         try {
             logger.info("updateName");
@@ -52,6 +52,50 @@ public class UserController {
         } catch (IllegalArgumentException ex) {
             logger.error(ex.getMessage());
             return ResponseEntity.badRequest().body(new ErrorMessageResponse(ex.getMessage()));           // the same name in DB
+        }
+    }
+
+    @RequestMapping(method = RequestMethod.PATCH, path = "/update/email")
+    public ResponseEntity updateEmail(@RequestHeader String token, @RequestBody UserRequest userRequest) {
+        try {
+            logger.info("updateEmail");
+            if (!Validate.validateEmail(userRequest.getEmail())) {
+                logger.error("email not valid");
+                return ResponseEntity.badRequest().body(new ErrorMessageResponse("email not valid"));
+            }
+
+            Integer userId = authService.getUserIdByToken(token);
+            logger.debug("user id - " +  userId);
+            return ResponseEntity.ok(userService.updateEmail(userId, userRequest.getEmail()));
+
+        } catch (NullPointerException ex) {
+            logger.error(ex.getMessage());
+            return ResponseEntity.badRequest().body(new ErrorMessageResponse(ex.getMessage()));           // user not found (id) / not authrized (token)
+        } catch (IllegalArgumentException ex) {
+            logger.error(ex.getMessage());
+            return ResponseEntity.badRequest().body(new ErrorMessageResponse(ex.getMessage()));           // the same email in DB
+        }
+    }
+
+    @RequestMapping(method = RequestMethod.PATCH, path = "/update/password")
+    public ResponseEntity updatePassword(@RequestHeader String token, @RequestBody UserRequest userRequest) {
+        try {
+            logger.info("updatePassword");
+            if (!Validate.validatePassword(userRequest.getPassword())) {
+                logger.error("password not valid");
+                return ResponseEntity.badRequest().body(new ErrorMessageResponse("password not valid"));
+            }
+
+            Integer userId = authService.getUserIdByToken(token);
+            logger.debug("user id - " +  userId);
+            return ResponseEntity.ok(userService.updatePassword(userId, userRequest.getPassword()));
+
+        } catch (NullPointerException ex) {
+            logger.error(ex.getMessage());
+            return ResponseEntity.badRequest().body(new ErrorMessageResponse(ex.getMessage()));           // user not found (id) / not authrized (token)
+        } catch (IllegalArgumentException ex) {
+            logger.error(ex.getMessage());
+            return ResponseEntity.badRequest().body(new ErrorMessageResponse(ex.getMessage()));           // the same password in DB
         }
     }
 
