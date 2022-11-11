@@ -13,16 +13,15 @@ import java.util.Map;
 
 @Repository
 public class UserRepository  {
-    private static Map<Integer, User> users;     // cache
+    private static Map<Integer, User> users = new HashMap<>();     // cache
     private static final String BASE_ROUTE = "src/main/java/auth_spring/repository/repo";
 
 
     public UserRepository() {
-        users = new HashMap<>();
+        users = cacheUsersFilesFromRepo();                         // cache all users to map
     }
 
     public List<User> getAll(){
-//        cacheUsersFilesFromRepo();
         return new ArrayList<>(users.values());
     }
 
@@ -35,13 +34,13 @@ public class UserRepository  {
         return null;
     }
 
-    public static User getUserById(int id){
+    public User getUserById(int id){
         for (Integer i : users.keySet()) {
-            if (users.get(i).getEmail().equals(id)) {
+            if (users.get(i).getId() == id) {
                 return users.get(i);
             }
         }
-        return null;
+        throw new NullPointerException("the user not found");
     }
 
     public User add(User user) {
@@ -55,7 +54,19 @@ public class UserRepository  {
         }
     }
 
-    public static void removeUserFromDb(int id) {
+    public User updateUser(User user) {
+        try {
+            String filename = BASE_ROUTE + "/" + user.getId() + ".json";
+            User userUpdated = Files.add(filename, user);
+            System.out.println(userUpdated);
+            users.put(userUpdated.getId(), userUpdated);
+            return userUpdated;
+        } catch (RuntimeException ex) {
+            throw new RuntimeException("user wasn't added: " + ex);
+        }
+    }
+
+    public void removeUserFromDb(int id) {
         try {
         String filename = BASE_ROUTE + "/" + id + ".json";
         Files.removeFile(filename);
@@ -69,12 +80,10 @@ public class UserRepository  {
         File folder = new File(BASE_ROUTE);
         File[] listOfFiles = folder.listFiles();
 
-        String filename = BASE_ROUTE + "/";
-
-        for (int i = 0; i < listOfFiles.length; i++) {
-            HashMap<String, String> fileContent = Files.readFromFile(filename + listOfFiles[i].getName());
-            users.put(Integer.valueOf(fileContent.get("id")), new User(fileContent.get("email"), fileContent.get("name"), fileContent.get("password")));
-        }
+            for (int i = 0; i < listOfFiles.length; i++) {
+                User user = Files.readFromFile(BASE_ROUTE + "/" + listOfFiles[i].getName());
+                users.put(Integer.valueOf(user.getId()), user);
+            }
         return users;
     }
 }

@@ -43,12 +43,26 @@ public class Files {
 
 
     // read from file
-    public static HashMap<String, String> readFromFile(String filename) {
+//    public static HashMap<String, String> readFromFile(String filename) {
+//        try (Reader reader = new FileReader(filename)) {
+//
+//            // Convert JSON File to HashMap
+//            HashMap<String, String> mapJson = gson.fromJson(reader, HashMap.class);
+//            return mapJson;
+//
+//        } catch (FileNotFoundException e) {
+//            System.out.println("FileNotFoundException ex: "+ e);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        return null;
+//    }
+
+    public static User readFromFile(String filename) {
         try (Reader reader = new FileReader(filename)) {
 
-            // Convert JSON File to HashMap
-            HashMap<String, String> mapJson = gson.fromJson(reader, HashMap.class);
-            return mapJson;
+            User user = gson.fromJson(reader, User.class);
+            return user;
 
         } catch (FileNotFoundException e) {
             System.out.println("FileNotFoundException ex: "+ e);
