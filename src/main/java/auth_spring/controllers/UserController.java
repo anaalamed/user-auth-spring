@@ -1,23 +1,31 @@
 package auth_spring.controllers;
 
-import auth_spring.AuthSpring;
+import auth_spring.controllers.requests.UserRequest;
+import auth_spring.controllers.responses.ErrorMessageResponse;
 import auth_spring.model.User;
 import auth_spring.services.AuthService;
 import auth_spring.services.UserService;
+import auth_spring.utils.Validate;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
+
 
 @RestController
 @RequestMapping("/user")
 public class UserController {
-//    @Autowired
-//    private AuthService authService;
+    @Autowired
+    private AuthService authService;
     @Autowired
     private UserService userService;
+
+    private static Logger logger = LogManager.getLogger(UserController.class.getName());
+
 
 
     @RequestMapping(method = RequestMethod.GET)
@@ -25,10 +33,38 @@ public class UserController {
         return ResponseEntity.ok(userService.getUsers());
     }
 
+    @RequestMapping(method = RequestMethod.PATCH, path = "/update")
+    public ResponseEntity updateName(@RequestHeader String token, @RequestBody UserRequest userRequest) {
+        try {
+            logger.info("updateName");
+            if (!Validate.validateName(userRequest.getName())) {
+                logger.error("name not valid");
+                return ResponseEntity.badRequest().body(new ErrorMessageResponse("name not valid"));
+            }
+
+            Integer userId = authService.getUserIdByToken(token);
+            logger.debug("user id - " +  userId);
+            return ResponseEntity.ok(userService.updateName(userId, userRequest.getName()));
+
+        } catch (NullPointerException ex) {
+            logger.error(ex.getMessage());
+            return ResponseEntity.badRequest().body(new ErrorMessageResponse(ex.getMessage()));           // user not found (id) / not authrized (token)
+        } catch (IllegalArgumentException ex) {
+            logger.error(ex.getMessage());
+            return ResponseEntity.badRequest().body(new ErrorMessageResponse(ex.getMessage()));           // the same name in DB
+        }
+    }
+
     @RequestMapping(method = RequestMethod.DELETE)
-    public ResponseEntity<Void> removeUser(@RequestHeader String token) {
-            Integer userId = AuthService.getUserId(token);
-            UserService.removeUser(userId);
+    public ResponseEntity removeUser(@RequestHeader String token) {
+        try {
+            Integer userId = authService.getUserIdByToken(token);
+            logger.debug("user id - " + userId);
+            userService.removeUser(userId);
             return ResponseEntity.noContent().build();
+        } catch (NullPointerException ex) {
+            logger.error(ex.getMessage());
+            return ResponseEntity.badRequest().body(new ErrorMessageResponse(ex.getMessage()));           // user not found (id) / not authrized (token)
+        }
     }
 }

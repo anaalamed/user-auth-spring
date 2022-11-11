@@ -40,40 +40,27 @@ public class UserRepository  {
                 return users.get(i);
             }
         }
-        throw new NullPointerException("the user not found");
+        return null;
     }
 
     public User add(User user) {
-        try {
             String filename = BASE_ROUTE + "/" + user.getId() + ".json";
             User userAdded = Files.add(filename, user);
             users.put(userAdded.getId(), userAdded);
             return userAdded;
-        } catch (RuntimeException ex) {
-            throw new RuntimeException("user wasn't added: " + ex);
-        }
     }
 
     public User updateUser(User user) {
-        try {
             String filename = BASE_ROUTE + "/" + user.getId() + ".json";
             User userUpdated = Files.add(filename, user);
-            System.out.println(userUpdated);
             users.put(userUpdated.getId(), userUpdated);
             return userUpdated;
-        } catch (RuntimeException ex) {
-            throw new RuntimeException("user wasn't added: " + ex);
-        }
     }
 
     public void removeUserFromDb(int id) {
-        try {
         String filename = BASE_ROUTE + "/" + id + ".json";
         Files.removeFile(filename);
         users.remove(id);
-        } catch (NullPointerException ex) {
-            throw new IllegalArgumentException("file wasn't found");
-        }
     }
 
     private static Map<Integer, User> cacheUsersFilesFromRepo() {

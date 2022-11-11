@@ -3,6 +3,7 @@ package auth_spring.controllers.responses;
 public class TokenResponse {
     private String token;
 
+
     public TokenResponse() {}
 
     public TokenResponse(String token) {
