@@ -37,7 +37,7 @@ public class UserController {
     public ResponseEntity updateName(@RequestHeader String token, @RequestBody UserRequest userRequest) {
         try {
             logger.info("updateName");
-            if (!Validate.validateName(userRequest.getName())) {
+            if ( userRequest.getName() == null || !Validate.validateName(userRequest.getName())) {
                 logger.error("name not valid");
                 return ResponseEntity.badRequest().body(new ErrorMessageResponse("name not valid"));
             }
@@ -59,7 +59,7 @@ public class UserController {
     public ResponseEntity updateEmail(@RequestHeader String token, @RequestBody UserRequest userRequest) {
         try {
             logger.info("updateEmail");
-            if (!Validate.validateEmail(userRequest.getEmail())) {
+            if (userRequest.getEmail() == null || !Validate.validateEmail(userRequest.getEmail())) {
                 logger.error("email not valid");
                 return ResponseEntity.badRequest().body(new ErrorMessageResponse("email not valid"));
             }
@@ -81,7 +81,7 @@ public class UserController {
     public ResponseEntity updatePassword(@RequestHeader String token, @RequestBody UserRequest userRequest) {
         try {
             logger.info("updatePassword");
-            if (!Validate.validatePassword(userRequest.getPassword())) {
+            if (userRequest.getPassword() == null || !Validate.validatePassword(userRequest.getPassword())) {
                 logger.error("password not valid");
                 return ResponseEntity.badRequest().body(new ErrorMessageResponse("password not valid"));
             }

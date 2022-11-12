@@ -27,13 +27,16 @@ public class UserService {
         Optional<User> userById = userRepository.getUserById(id);
 
         if (!userById.isPresent()) {
+            logger.error("user not found");
             throw new NullPointerException("user not found");
         }
 
         if (userById.get().getName().equals(name)) {
+            logger.error("can not update the same name");
             throw new IllegalArgumentException("can not update the same name");
         }
 
+        logger.debug(userById.get());
         // need to improve - write the field only
         userById.get().setName(name);
         return userRepository.updateUser(userById.get());
