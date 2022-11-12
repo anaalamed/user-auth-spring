@@ -32,9 +32,8 @@ public class AuthController {
     public ResponseEntity addUser(@RequestBody UserRequest userRequest){
         try {
             logger.info("addUser");
-            boolean isValidateUser = Validate.validateUserFields(userRequest.getEmail(), userRequest.getName(), userRequest.getPassword());
 
-            if (!isValidateUser) {
+            if (userRequest.getName() == null || userRequest.getEmail() == null || userRequest.getPassword() == null || !Validate.validateUserFields(userRequest.getEmail(), userRequest.getName(), userRequest.getPassword())) {
                 logger.error("input fields are not valid, registration failed");
                 return ResponseEntity.badRequest().body(new ErrorMessageResponse("input fields are not valid, registration failed"));
             }
@@ -50,9 +49,8 @@ public class AuthController {
     public ResponseEntity login(@RequestBody UserRequest userRequest){
         try {
             logger.info("login");
-            boolean isValidateUser = Validate.validateUserFields(userRequest.getEmail(), userRequest.getPassword());
 
-            if (!isValidateUser) {
+            if ( userRequest.getEmail() == null || userRequest.getPassword() == null || !Validate.validateUserFields(userRequest.getEmail(), userRequest.getPassword())) {
                 logger.error("input fields are not valid, login failed");
                 return ResponseEntity.badRequest().body(new ErrorMessageResponse("input fields are not valid, login failed"));
             }
