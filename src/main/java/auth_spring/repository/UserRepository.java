@@ -6,10 +6,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @Repository
@@ -29,22 +26,22 @@ public class UserRepository  {
         return new ArrayList<>(users.values());
     }
 
-    public static User getUserByEmail(String email){
+    public Optional<User> getUserByEmail(String email){
         for (Integer i : users.keySet()) {
             if (users.get(i).getEmail().equals(email)) {
-                return users.get(i);
+                return Optional.of(users.get(i));
             }
         }
-        return null;
+        return Optional.empty();
     }
 
-    public User getUserById(int id){
+    public Optional<User> getUserById(int id){
         for (Integer i : users.keySet()) {
             if (users.get(i).getId() == id) {
-                return users.get(i);
+                return Optional.of(users.get(i));
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     public User add(User user) {

@@ -27,9 +27,9 @@ public class AuthService {
 
     public User add(UserRequest userRequest) {
         logger.info("add");
-        User userExist = UserRepository.getUserByEmail(userRequest.getEmail());
+        Optional<User> userByEmail = userRepository.getUserByEmail(userRequest.getEmail());
 
-        if (userExist != null) {
+        if ( userByEmail.isPresent()) {
             logger.error("The user already exists");
             throw new IllegalArgumentException("The user already exists");
         }
@@ -39,17 +39,16 @@ public class AuthService {
     }
 
     public TokenResponse login(UserRequest userRequest) {
-        User userByEmail = userRepository.getUserByEmail(userRequest.getEmail());
+         Optional<User> userByEmail = userRepository.getUserByEmail(userRequest.getEmail());
 
-        if (userByEmail == null) {
+        if (!userByEmail.isPresent()) {
             throw new NullPointerException("user not found");
         }
 
-        if (userByEmail.getPassword().equals(userRequest.getPassword())) {
+        if (userByEmail.get().getPassword().equals(userRequest.getPassword())) {
             String token = generateUniqueToken();
-            mapUserTokens.put(token, String.valueOf(userByEmail.getId()));
-//            return token;
-            return new TokenResponse(token, userByEmail);
+            mapUserTokens.put(token, String.valueOf(userByEmail.get().getId()));
+            return new TokenResponse(token, userByEmail.get());
         } else {
             logger.error("password doesn't match");
             throw new IllegalArgumentException("password doesn't match");

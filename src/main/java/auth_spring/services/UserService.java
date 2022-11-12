@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -23,60 +24,60 @@ public class UserService {
 
       public User updateName(Integer id, String name) {
         logger.info("updateName");
-        User user = userRepository.getUserById(id);
+        Optional<User> userById = userRepository.getUserById(id);
 
-        if (user == null) {
+        if (!userById.isPresent()) {
             throw new NullPointerException("user not found");
         }
 
-        if (user.getName().equals(name)) {
+        if (userById.get().getName().equals(name)) {
             throw new IllegalArgumentException("can not update the same name");
         }
 
         // need to improve - write the field only
-        user.setName(name);
-        return userRepository.updateUser(user);
+        userById.get().setName(name);
+        return userRepository.updateUser(userById.get());
     }
 
     public User updateEmail(Integer id, String email) {
         logger.info("updateEmail");
-        User user = userRepository.getUserById(id);
+        Optional<User> userById = userRepository.getUserById(id);
 
-        if (user == null) {
+        if (!userById.isPresent()) {
             throw new NullPointerException("user not found");
         }
 
-        if (user.getEmail().equals(email)) {
+        if (userById.get().getEmail().equals(email)) {
             throw new IllegalArgumentException("can not update the same email");
         }
 
         // need to improve - write the field only
-        user.setEmail(email);
-        return userRepository.updateUser(user);
+        userById.get().setEmail(email);
+        return userRepository.updateUser(userById.get());
     }
 
     public User updatePassword(Integer id, String password) {
         logger.info("updatePassword");
-        User user = userRepository.getUserById(id);
+        Optional<User> userById = userRepository.getUserById(id);
 
-        if (user == null) {
+        if (!userById.isPresent()) {
             throw new NullPointerException("user not found");
         }
 
-        if (user.getPassword().equals(password)) {
+        if (userById.get().getPassword().equals(password)) {
             throw new IllegalArgumentException("can not update the same password");
         }
 
         // need to improve - write the field only
-        user.setPassword(password);
-        return userRepository.updateUser(user);
+        userById.get().setPassword(password);
+        return userRepository.updateUser(userById.get());
     }
 
     public void removeUser(Integer id) {
         logger.info("removeUser");
 
-        User user = userRepository.getUserById(id);
-        if (user == null) {
+        Optional<User> userById = userRepository.getUserById(id);
+        if (!userById.isPresent()) {
             throw new NullPointerException("user not found");
         }
         userRepository.removeUserFromDb(id);
